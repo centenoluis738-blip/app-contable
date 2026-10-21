@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import { BASE_PATH } from './site';
 
 export interface Article {
   slug: string;
@@ -41,7 +42,8 @@ export function getArticles(): Article[] {
         category: data.category ?? 'empezar',
         order: data.order ?? 99,
         video: data.video,
-        html: marked.parse(content, { async: false }) as string,
+        // Los enlaces internos de los artículos (/ayuda/...) llevan delante la ruta base del sitio.
+        html: (marked.parse(content, { async: false }) as string).replace(/href="\//g, `href="${BASE_PATH}/`),
         text: content.replace(/[#*_>`-]/g, ' ').replace(/\s+/g, ' ').trim(),
       };
     })

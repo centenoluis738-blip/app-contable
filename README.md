@@ -87,6 +87,10 @@ Corre las pruebas de cálculo (`packages/shared`) y las pruebas de la API contra
 
 ## Publicación
 
+**Para las pruebas de la tesis (gratis):** todo el proyecto se publica como un solo servicio en Render, con la base de datos en Neon. La app queda en la raíz, la ayuda en `/guia` y la API en `/api`. Los pasos están en [docs/PUBLICAR.md](docs/PUBLICAR.md).
+
+Por separado, en un hosting de pago o propio:
+
 - **API**: cualquier servicio de Node.js (AWS App Runner, Azure App Service, Render, Railway) con PostgreSQL gestionado. `npm run build -w apps/api && npm start -w apps/api`.
 - **App web**: `npm run build -w apps/web` genera `apps/web/dist`, que se sirve como sitio estático.
 - **Web de ayuda**: `npm run build -w apps/help` genera `apps/help/out`, que se sirve como sitio estático.
