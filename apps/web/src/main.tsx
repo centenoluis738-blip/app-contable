@@ -13,6 +13,7 @@ import { ReportsPage, TaxesPage } from './pages/Reports';
 import { AccountingPage } from './pages/Accounting';
 import { SettingsPage } from './pages/Settings';
 import { PayrollPage } from './pages/Payroll';
+import { QuickSalePage } from './pages/QuickSale';
 import './styles.css';
 
 function Protected({ children }: { children: ReactNode }) {
@@ -32,6 +33,7 @@ function App() {
       <Route path="/empresa" element={user ? <OnboardingPage /> : <Navigate to="/login" />} />
       <Route element={<Protected><Layout /></Protected>}>
         <Route index element={<DashboardPage />} />
+        <Route path="venta" element={<QuickSalePage />} />
         <Route path="facturas" element={<InvoicesPage />} />
         <Route path="facturas/nueva" element={<InvoiceFormPage />} />
         <Route path="facturas/:id" element={<InvoiceDetailPage />} />

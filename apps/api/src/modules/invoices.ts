@@ -305,6 +305,56 @@ invoicesRouter.post('/:id/payments', requireCompany(...WRITERS), async (req, res
   res.status(201).json(summary(await loadInvoice(pool, req.company!.id, String(req.params.id))));
 });
 
+const quickSaleSchema = z.object({
+  date: isoDate.default(today()),
+  /** NIO o USD: los turistas a menudo pagan en dólares. */
+  currency: z.string().length(3).toUpperCase().optional(),
+  method: z.enum(['cash', 'card', 'transfer']).default('cash'),
+  items: z
+    .array(z.object({ productId: z.string().uuid().optional().nullable(), description: z.string().trim().min(1, 'Describe la pieza'), quantity: positiveAmount, unitPrice: positiveAmount }))
+    .min(1, 'Agrega al menos una pieza'),
+});
+
+/** Busca (o crea) el contacto genérico "Consumidor final" para las ventas de mostrador. */
+async function walkInCustomer(client: PoolClient, companyId: string): Promise<string> {
+  const found = await one(client, `SELECT id FROM contacts WHERE company_id = $1 AND kind <> 'supplier' AND tax_regime = 'consumidor_final' AND name = 'Consumidor final'`, [companyId]);
+  if (found) return found.id;
+  const c = await one(client, `INSERT INTO contacts(company_id, kind, name, tax_regime) VALUES ($1, 'customer', 'Consumidor final', 'consumidor_final') RETURNING id`, [companyId]);
+  return c.id;
+}
+
+/**
+ * Venta rápida de mostrador: crea la factura a "Consumidor final", la emite (descuenta existencias y registra el costo)
+ * y registra el cobro completo en caja o banco, todo en una sola operación.
+ */
+invoicesRouter.post('/quick-sale', requireCompany(...WRITERS), async (req, res) => {
+  const b = quickSaleSchema.parse(req.body);
+  const companyId = req.company!.id;
+  const id = await tx(async (client) => {
+    const company = await one(client, 'SELECT invoice_series, currency FROM companies WHERE id = $1', [companyId]);
+    const contactId = await walkInCustomer(client, companyId);
+    const lines = [];
+    for (const it of b.items) {
+      const p = it.productId ? await one(client, 'SELECT tax_code FROM products WHERE id = $1 AND company_id = $2', [it.productId, companyId]) : null;
+      if (it.productId && !p) throw notFound('Producto');
+      lines.push({ productId: it.productId ?? null, description: it.description, quantity: it.quantity, unitPrice: it.unitPrice, discount: 0, taxCode: (p?.tax_code ?? 'IVA15') as keyof typeof TAX_CODES });
+    }
+    const inv = await one(
+      client,
+      `INSERT INTO invoices(company_id, contact_id, series, issue_date, due_date, currency, notes, created_by)
+       VALUES ($1,$2,$3,$4,$4,$5,'Venta rápida',$6) RETURNING id`,
+      [companyId, contactId, company.invoice_series, b.date, b.currency ?? company.currency, req.user!.id],
+    );
+    await saveInvoice(client, inv.id, companyId, { contactId, issueDate: b.date, currency: b.currency, withholdingType: 'ninguna', lines });
+    await issueInvoice(client, companyId, inv.id, req.user!.id);
+    const issued = await loadInvoice(client, companyId, inv.id);
+    await registerPayment(client, companyId, req.user!.id, inv.id, { date: b.date, amount: issued.total, withheld: '0', method: b.method });
+    await audit(client, { ...ctx(req), action: 'quick_sale', entity: 'invoice', entityId: inv.id });
+    return inv.id;
+  });
+  res.status(201).json(summary(await loadInvoice(pool, companyId, id)));
+});
+
 /** Anula una factura emitida: revierte su asiento (y el costo de ventas) y los de sus cobros. Requiere dueño o contador. */
 invoicesRouter.post('/:id/void', requireCompany(...ACCOUNTANTS), async (req, res) => {
   const b = z.object({ reason: z.string().trim().min(3, 'Indica el motivo'), date: isoDate.default(today()) }).parse(req.body);

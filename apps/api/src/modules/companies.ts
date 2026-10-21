@@ -26,6 +26,8 @@ const companyFields = z.object({
   email: z.string().email().optional().or(z.literal('')),
   phone: z.string().optional(),
   invoiceSeries: z.string().trim().min(1).max(10).default('A'),
+  /** Modo sencillo: menú reducido y venta rápida. */
+  simpleMode: z.boolean().default(true),
 });
 
 const toRow = (c: Record<string, any>) => ({
@@ -47,6 +49,7 @@ const toRow = (c: Record<string, any>) => ({
   pmdRate: c.pmd_rate,
   municipality: c.municipality,
   invoiceAuthorization: c.invoice_authorization,
+  simpleMode: c.simple_mode,
   role: c.role,
 });
 
@@ -65,10 +68,10 @@ companiesRouter.post('/', async (req, res) => {
     const c = await one(
       client,
       `INSERT INTO companies(name, tax_id, country, currency, tax_regime, default_tax_rate, address, email, phone, invoice_series,
-         fixed_fee, imi_rate, pmd_rate, municipality, invoice_authorization)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`,
+         fixed_fee, imi_rate, pmd_rate, municipality, invoice_authorization, simple_mode)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *`,
       [body.name, body.taxId, body.country, body.currency, body.taxRegime, body.defaultTaxRate, body.address, body.email || null, body.phone,
-        body.invoiceSeries, body.fixedFee, body.imiRate, body.pmdRate, body.municipality ?? null, body.invoiceAuthorization ?? null],
+        body.invoiceSeries, body.fixedFee, body.imiRate, body.pmdRate, body.municipality ?? null, body.invoiceAuthorization ?? null, body.simpleMode],
     );
     await client.query(`INSERT INTO memberships(user_id, company_id, role) VALUES ($1,$2,'owner')`, [req.user!.id, c.id]);
     await createDefaultChart(client, c.id);
@@ -91,6 +94,7 @@ companiesRouter.patch('/current', requireCompany('owner'), async (req, res) => {
     name: 'name', taxId: 'tax_id', country: 'country', currency: 'currency', taxRegime: 'tax_regime',
     defaultTaxRate: 'default_tax_rate', address: 'address', email: 'email', phone: 'phone', invoiceSeries: 'invoice_series',
     fixedFee: 'fixed_fee', imiRate: 'imi_rate', pmdRate: 'pmd_rate', municipality: 'municipality', invoiceAuthorization: 'invoice_authorization',
+    simpleMode: 'simple_mode',
   };
   const entries = Object.entries(body).filter(([k, v]) => v !== undefined && map[k]);
   if (!entries.length) throw badRequest('No hay cambios');

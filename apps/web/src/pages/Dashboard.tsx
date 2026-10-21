@@ -35,7 +35,7 @@ export function DashboardPage() {
       <PageHeader
         title={`Hola, ${company?.name ?? ''}`}
         help="primeros-pasos"
-        actions={<><Link className="btn" to="/gastos/nuevo">+ Gasto</Link><Link className="btn primary" to="/facturas/nueva">+ Factura</Link></>}
+        actions={<><Link className="btn" to="/gastos/nuevo">+ Gasto</Link><Link className="btn" to="/facturas/nueva">+ Factura</Link><Link className="btn primary" to="/venta">+ Venta rápida</Link></>}
       />
       <ErrorBox error={error} />
       {loading || !data ? <Loading /> : (

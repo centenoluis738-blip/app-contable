@@ -225,6 +225,30 @@ describe('inventario y flujo de efectivo', () => {
   });
 });
 
+describe('modo sencillo para tramos', () => {
+  it('registra una venta rápida en efectivo con costo de ventas y sin IVA en cuota fija', async () => {
+    const { api } = await setupCompany({ taxRegime: 'cuota_fija', fixedFee: '400' });
+    const me = (await api.get('/companies/current').expect(200)).body;
+    expect(me.simpleMode).toBe(true);
+    const p = (await api.post('/products').send({ kind: 'product', name: 'Hamaca matrimonial', price: '1500', taxCode: 'IVA15', trackStock: true }).expect(201)).body;
+    await api.post(`/products/${p.id}/stock-in`).send({ date: '2026-10-01', quantity: 5, unitCost: '800' }).expect(201);
+
+    const sale = (await api.post('/invoices/quick-sale').send({ date: '2026-10-05', method: 'cash', items: [{ productId: p.id, description: 'Hamaca matrimonial', quantity: 2, unitPrice: '1500' }] }).expect(201)).body;
+    expect(sale).toMatchObject({ status: 'paid', total: '3000.00', taxTotal: '0.00' });
+    await api.post('/invoices/quick-sale').send({ date: '2026-10-06', items: [{ description: 'Pulsera de cuero', quantity: 1, unitPrice: '150' }] }).expect(201);
+
+    expect(await balanceOf(api, 'cash')).toBe('3150.00');
+    expect(await balanceOf(api, 'costOfSales')).toBe('1600.00');
+    expect((await api.get('/products').expect(200)).body[0].stock).toBe('3.000');
+    const contacts = (await api.get('/contacts').expect(200)).body;
+    expect(contacts.filter((c: any) => c.name === 'Consumidor final')).toHaveLength(1);
+    await api.post('/invoices/quick-sale').send({ items: [{ productId: p.id, description: 'Hamaca', quantity: 10, unitPrice: '1500' }] }).expect(400);
+
+    const off = (await api.patch('/companies/current').send({ simpleMode: false }).expect(200)).body;
+    expect(off.simpleMode).toBe(false);
+  });
+});
+
 describe('controles contables', () => {
   it('exige asientos cuadrados, respeta el cierre y permite revertir', async () => {
     const { api, account } = await setupCompany();

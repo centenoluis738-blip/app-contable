@@ -124,3 +124,33 @@ textarea { min-height: 70px; }
 .auth-card .btn.primary { width: 100%; justify-content: center; margin-top: 8px; }
 .table-wrap { overflow-x: auto; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.quick { display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; }
+@media (max-width: 900px) { .quick { grid-template-columns: 1fr; } }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.tile { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left; padding: 14px; min-height: 92px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); font: inherit; cursor: pointer; }
+.tile:hover:not(:disabled) { border-color: var(--primary); }
+.tile:disabled { opacity: .45; cursor: not-allowed; }
+.tile small { color: var(--muted); }
+.row.other { align-items: center; }
+.ticket { position: sticky; top: 16px; }
+.ticket-lines { list-style: none; padding: 0; margin: 0 0 12px; }
+.ticket-lines li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.ticket-lines li input { max-width: 110px; margin-top: 4px; padding: 4px 8px; }
+.qty { display: flex; align-items: center; gap: 8px; }
+.qty span { min-width: 20px; text-align: center; font-weight: 600; }
+.segmented { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+.segmented button { flex: 1; padding: 10px 6px; border: 0; background: var(--surface); color: var(--text); font: inherit; cursor: pointer; }
+.segmented button + button { border-left: 1px solid var(--border); }
+.segmented button.active { background: var(--primary); color: #fff; }
+.ticket-total { display: flex; justify-content: space-between; align-items: baseline; font-size: 1.2rem; margin: 12px 0; }
+.btn.big { padding: 14px 18px; font-size: 1.05rem; justify-content: center; }
+.btn.block { width: 100%; }
+.line-info { display: flex; flex-direction: column; }
+.mobile-bar { display: none; }
+@media (max-width: 900px) {
+  .mobile-bar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; background: var(--surface); border-top: 1px solid var(--border); z-index: 5; }
+  .quick { padding-bottom: 72px; }
+}
+@media (max-width: 800px) {
+  .sidebar-foot { flex-direction: row; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+}

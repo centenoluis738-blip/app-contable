@@ -4,7 +4,7 @@ import { api } from '../api';
 import { useSession } from '../session';
 import { ErrorBox, Field, PageHeader, today, useAction, useFetch } from '../components/ui';
 
-interface Company { name: string; taxId: string | null; taxRegime: TaxRegime; fixedFee: string; imiRate: string; pmdRate: string; municipality: string | null; invoiceAuthorization: string | null; address: string | null; email: string | null; phone: string | null; invoiceSeries: string; lockedUntil: string | null; currency: string }
+interface Company { name: string; taxId: string | null; taxRegime: TaxRegime; fixedFee: string; imiRate: string; pmdRate: string; municipality: string | null; invoiceAuthorization: string | null; simpleMode: boolean; address: string | null; email: string | null; phone: string | null; invoiceSeries: string; lockedUntil: string | null; currency: string }
 interface Rate { currency: string; date: string; rate: string }
 interface Member { id: string; name: string; email: string; role: Role }
 
@@ -56,14 +56,18 @@ export function SettingsPage() {
           <Field label="Serie de facturas"><input disabled={!isOwner} value={form.invoiceSeries} onChange={(e) => setForm({ ...form, invoiceSeries: e.target.value })} /></Field>
           <Field label="Autorización de facturación DGI" hint="Se imprime al pie de la factura"><input disabled={!isOwner} value={form.invoiceAuthorization ?? ''} onChange={(e) => setForm({ ...form, invoiceAuthorization: e.target.value })} /></Field>
         </div>
+        <label className="check">
+          <input type="checkbox" disabled={!isOwner} checked={form.simpleMode} onChange={(e) => setForm({ ...form, simpleMode: e.target.checked })} />
+          Modo sencillo: muestra solo lo esencial (venta rápida, ventas, gastos, inventario, impuestos y reportes). Desactívalo para ver nómina, bancos y contabilidad.
+        </label>
         <ErrorBox error={save.error} />
         {saved && <div className="alert ok">Cambios guardados.</div>}
         {isOwner && (
           <button className="btn primary" disabled={save.busy} onClick={() => void save.run(async () => {
-            const { name, taxId, taxRegime, address, email, phone, invoiceSeries, fixedFee, imiRate, pmdRate, municipality, invoiceAuthorization } = form;
+            const { name, taxId, taxRegime, address, email, phone, invoiceSeries, fixedFee, imiRate, pmdRate, municipality, invoiceAuthorization, simpleMode } = form;
             await api.patch('/companies/current', {
               name, taxId, taxRegime, address, email: email || undefined, phone, invoiceSeries,
-              fixedFee: Number(fixedFee), imiRate: Number(imiRate), pmdRate: Number(pmdRate), municipality, invoiceAuthorization,
+              fixedFee: Number(fixedFee), imiRate: Number(imiRate), pmdRate: Number(pmdRate), municipality, invoiceAuthorization, simpleMode,
             });
             setSaved(true);
             await refresh();

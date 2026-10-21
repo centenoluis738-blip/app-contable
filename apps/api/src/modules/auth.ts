@@ -45,7 +45,7 @@ authRouter.post('/login', async (req, res) => {
 authRouter.get('/me', requireAuth, async (req, res) => {
   const companies = await query(
     pool,
-    `SELECT c.id, c.name, c.currency, c.country, m.role FROM memberships m JOIN companies c ON c.id = m.company_id
+    `SELECT c.id, c.name, c.currency, c.country, c.simple_mode AS "simpleMode", m.role FROM memberships m JOIN companies c ON c.id = m.company_id
      WHERE m.user_id = $1 ORDER BY c.name`,
     [req.user!.id],
   );

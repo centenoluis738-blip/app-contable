@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { api, saveSession } from './api';
 
-export interface CompanySummary { id: string; name: string; currency: string; country: string; role: string }
+export interface CompanySummary { id: string; name: string; currency: string; country: string; role: string; simpleMode: boolean }
 interface SessionState {
   loading: boolean;
   user: { id: string; name: string; email: string } | null;
