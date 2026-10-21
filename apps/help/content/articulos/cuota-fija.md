@@ -20,7 +20,7 @@ El **régimen de cuota fija** es para pequeños negocios con ingresos menores a 
 
 ## Tu rutina mensual
 
-1. Factura y registra tus gastos durante el mes.
+1. Registra cada venta con **Venta rápida** (o una factura si el cliente la pide) y tus gastos durante el mes.
 2. Al registrar cada cobro, anota la retención y guarda la constancia.
 3. A inicio de mes abre **Impuestos**, elige el mes anterior y revisa: cuota − retenciones + IMI.
 4. Pulsa **Liquidar impuestos del mes** y paga en la DGI y en la alcaldía.
