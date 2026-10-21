@@ -35,7 +35,7 @@ Al arrancar, el servidor crea las tablas y una empresa de demostración:
 - Usuario: `demo@contable.app`
 - Contraseña: `Demo1234`
 
-Cada comerciante también puede crear su propia cuenta con **Registrarse**.
+Cada comerciante también puede crear su propia cuenta con el enlace **Regístrate** de la pantalla de inicio de sesión.
 
 ## 3. Usarla desde el teléfono
 
