@@ -13,6 +13,8 @@ App contable para **mipymes de Nicaragua** (cuota fija y régimen general), con 
 
 ## Adaptada a Nicaragua
 
+- **Modo sencillo para tramos** (activado por defecto): menú reducido y **venta rápida** desde el teléfono (tocar piezas, cobrar en C$ o USD, efectivo, tarjeta o transferencia). Se desactiva en Configuración.
+
 - **Régimen de cuota fija**: facturas sin IVA, cuota mensual menos retenciones de IR acreditables (Art. 259 LCT), alertas por ingresos > C$ 100,000/mes y por venta al Estado > C$ 50,000.
 - **Régimen general**: IVA 15 %, exento y tasa cero (exportación), crédito fiscal, anticipo de IR / PMD menos retenciones.
 - **Retenciones de IR** que aplican los clientes del régimen general: 2 % (bienes y servicios desde C$ 1,000), 3 % (agropecuario) y 10 % (servicios profesionales); el consumidor final no retiene.
@@ -57,7 +59,7 @@ cp apps/help/.env.example apps/help/.env.local
 
 # 4. Crear tablas y datos de demostración
 npm run db:migrate
-npm run db:seed          # usuario demo@contable.app / Demo1234
+npm run db:seed          # usuario demo@contable.app / Demo1234 (tramo de artesanías de Masaya)
 
 # 5. Arrancar (cada uno en su terminal)
 npm run dev:api          # http://localhost:4000

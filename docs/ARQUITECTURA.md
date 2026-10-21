@@ -70,6 +70,7 @@ Siempre `numeric(14,2)` en la base de datos, texto en JSON (`"1234.50"`) y `deci
 | GET | /journal/ledger/:accountId | Libro mayor (`format=csv` para libros legalizados) |
 | CRUD | /invoices | Facturas (borradores) |
 | POST | /invoices/:id/issue · /payments · /void | Emitir, cobrar, anular |
+| POST | /invoices/quick-sale | Venta rápida a consumidor final: crea, emite y cobra en una sola operación |
 | GET | /invoices/:id/pdf | PDF |
 | GET/POST | /expenses | Gastos |
 | POST | /expenses/:id/pay · /void · /receipt | Pagar, anular, adjuntar comprobante |
@@ -91,4 +92,4 @@ Siempre `numeric(14,2)` en la base de datos, texto en JSON (`"1234.50"`) y `deci
 
 Tablas principales (`apps/api/migrations/001_init.sql`): `users`, `companies`, `memberships`, `accounts`, `contacts`, `products`, `invoices`, `invoice_lines`, `payments`, `expenses`, `journal_entries`, `journal_lines`, `bank_transactions`, `audit_log`, `support_tickets`. Para Nicaragua (`002_nicaragua.sql`): `exchange_rates`, `inventory_moves`, `employees`, `payroll_runs`, `payroll_lines`, `tax_settlements`.
 
-Para cambiar el esquema, agrega un archivo nuevo `003_...sql` en `apps/api/migrations` y ejecuta `npm run db:migrate`.
+`003_modo_sencillo.sql` agrega `companies.simple_mode`. Para cambiar el esquema, agrega un archivo nuevo `004_...sql` en `apps/api/migrations` y ejecuta `npm run db:migrate`.
