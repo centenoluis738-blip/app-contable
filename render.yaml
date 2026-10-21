@@ -1,0 +1,29 @@
+# Publicación gratuita en Render (plan free). La base de datos está en Neon (plan gratuito, no caduca):
+# al crear el Blueprint, Render pide pegar DATABASE_URL. Guía paso a paso: docs/PUBLICAR.md
+services:
+  - type: web
+    name: app-contable
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm run start:prod -w apps/api
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: VITE_API_URL
+        value: /api
+      - key: VITE_HELP_URL
+        value: /guia
+      - key: NEXT_PUBLIC_BASE_PATH
+        value: /guia
+      - key: NEXT_PUBLIC_API_URL
+        value: /api
+      - key: NEXT_PUBLIC_APP_URL
+        value: /

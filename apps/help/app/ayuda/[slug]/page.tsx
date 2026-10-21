@@ -28,7 +28,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
         <div className="card feedback">
           <span>¿Te sirvió este artículo?</span>
           <Link className="btn" href="/contacto/">No, necesito más ayuda</Link>
-          <a className="btn primary" href={APP_URL}>Sí, ir a la app</a>
+          <a className="btn primary" href={APP_URL || '/'}>Sí, ir a la app</a>
         </div>
       </article>
       {related.length > 0 && (
