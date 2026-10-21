@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "App Contable",
+    "slug": "app-contable",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "app.contable.mobile",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "app.contable.mobile"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "La app usa la cámara para fotografiar tus tickets y facturas de gastos."
+        }
+      ],
+      "expo-secure-store",
+      "expo-asset"
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:4000",
+      "helpUrl": "http://localhost:3000"
+    }
+  }
+}
